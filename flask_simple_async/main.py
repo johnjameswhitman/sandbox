@@ -4,6 +4,24 @@ Run this with:
 ```shell
 python -m pip install flask~=1.1  # with flask v2 consider asyncio
 python -m main
+
+# In another shell:
+wget http://localhost:5000/v0/sleepy
+
+# Back in app shell, observe that the request returns immediately...
+# Hi from sleepy
+# 127.0.0.1 - - [04/Dec/2021 13:19:33] "GET /v0/sleepy HTTP/1.1" 200 -
+# ...then a few seconds later the app logs:
+# Hi from slow_task #1
+# Hi from slow_task_callback. I got 2.
+# Hi from slow_task #0
+# Hi from slow_task_callback. I got 1.
+# Hi from slow_task #2
+# Hi from slow_task_callback. I got 3.
+# Hi from slow_task #4
+# Hi from slow_task_callback. I got 5.
+# Hi from slow_task #3
+# Hi from slow_task_callback. I got 4.
 ```
 """
 import atexit
@@ -22,6 +40,11 @@ class ThreadPoolManager:
     Mostly borrowed from the following docs:
         - https://flask.palletsprojects.com/en/1.1.x/extensiondev/#the-extension-code
         - https://docs.python.org/3.9/library/concurrent.futures.html#threadpoolexecutor
+
+    The Flask docs tie resource-lifecycle to the request lifecycle via the app context;
+    however, if you shutdown the threadpool with a "teardown_appcontext" hook, then it
+    blocks the request until all of its tasks finish. This is undesired, so tie the
+    executor's lifecycle to the ThreadPoolManager instance lifecycle.
     """
     workers: Optional[int] = None
     _executor: Optional[ThreadPoolExecutor] = None
