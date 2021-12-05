@@ -25,6 +25,7 @@ wget http://localhost:5000/v0/sleepy
 ```
 """
 import atexit
+import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
@@ -81,10 +82,10 @@ thread_pool_manager = ThreadPoolManager()
 endpoints = Blueprint('v0', __name__, url_prefix='/v0')
 
 
-def slow_task(i: int) -> int:
+def slow_task(i: int, request_id: int) -> int:
     """The slow task."""
     time.sleep(2)
-    print(f"Hi from slow_task #{i}")
+    print(f"Hi from slow_task #{i} in request {request_id} in PID {os.getpid()}")
     return i + 1
 
 
@@ -93,15 +94,18 @@ def slow_task_callback(j: int) -> None:
     print(f"Hi from slow_task_callback. I got {j}.")
 
 
+REQUEST_ID = {"counter": 0}
+
 @endpoints.route("/sleepy")
 def sleepy() -> dict:
     """Starts a slow async task without blocking request."""
     slow_tasks = 5  # int(request.get_json().get("slow_tasks", 5))
+    REQUEST_ID["counter"] += 1
     for i in range(slow_tasks):
-        future = thread_pool_manager.executor.submit(slow_task, i)
+        future = thread_pool_manager.executor.submit(slow_task, i, REQUEST_ID["counter"])
         future.add_done_callback(lambda f: slow_task_callback(f.result()))
 
-    print("Hi from sleepy")
+    print(f"Hi from sleepy request {REQUEST_ID['counter']} in PID {os.getpid()}")
     return {"status": "ok"}
 
 
