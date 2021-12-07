@@ -105,6 +105,7 @@ def sleepy() -> dict:
         future = thread_pool_manager.executor.submit(slow_task, i, REQUEST_ID["counter"])
         future.add_done_callback(lambda f: slow_task_callback(f.result()))
 
+    time.sleep(1)
     print(f"Hi from sleepy request {REQUEST_ID['counter']} in PID {os.getpid()}")
     return {"status": "ok"}
 
