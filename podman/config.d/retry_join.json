@@ -1,0 +1,7 @@
+{
+    "server": {
+        "server_join": {
+            "retry_join": [ "podman_nomad_1" ]
+        }
+    }
+}

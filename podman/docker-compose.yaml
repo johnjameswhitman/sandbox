@@ -1,0 +1,26 @@
+version: "3"
+
+networks:
+  nomad:
+
+# volumes:
+# nomad: {}
+
+services:
+
+  nomad:
+    image: nomad
+    replicas: 3
+    volumes:
+      - ./config.d:/etc/nomad/config.d
+    ports:
+      - "4646"
+      - "4647"
+      - "4648"
+    networks:
+      - nomad
+    command:
+      - -retry-join=podman_nomad_1  # the first replica
+    deploy:
+      mode: replicated
+      replicas: 3
