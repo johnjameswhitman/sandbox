@@ -1,0 +1,7 @@
+# Core
+django~=4.0
+djangorestframework~=3.13
+
+# Dev Tools
+isort
+black
