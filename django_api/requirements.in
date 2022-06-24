@@ -1,6 +1,12 @@
 # Core
 django~=4.0
 djangorestframework~=3.13
+django-stubs~=1.11
+djangorestframework-stubs~=1.6
+drf-spectacular
+pyyaml
+uritemplate
+python-dateutil
 
 # Dev Tools
 isort
