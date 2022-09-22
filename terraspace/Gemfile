@@ -1,3 +1,4 @@
 source 'https://rubygems.org'
 
 gem 'terraspace'
+gem 'terraspace_plugin_aws'
