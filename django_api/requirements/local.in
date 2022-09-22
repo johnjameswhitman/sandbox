@@ -1,0 +1,4 @@
+-r core.in
+isort
+black
+pip-tools
